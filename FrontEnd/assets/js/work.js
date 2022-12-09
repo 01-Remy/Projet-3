@@ -1,4 +1,6 @@
 /**
+ * Affichage et fitrage des différents travaux
+ *
  * Auteur : Rémy Balland
  */
 
