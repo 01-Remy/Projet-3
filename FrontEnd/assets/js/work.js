@@ -18,14 +18,7 @@ class Figure {
     const newImg = document.createElement("img");
     const newTitle = document.createElement("figcaption");
 
-    /* fix pour le CORS error : a revoir, la methode est probablement mauvaise
-    sans le replace : 
-    
-    La ressource à l’adresse « http://localhost:5678/images/appartement-paris-v1651287270508.png » a été bloquée en raison de son en-tête Cross-Origin-Resource-Policy (ou de son absence). 
-    
-    */
-    newImg.src = this.imageUrl.replace("http://localhost:5678", "../Backend");
-
+    newImg.src = this.imageUrl;
     newImg.alt = this.title;
     newTitle.innerText = this.title;
 
@@ -35,64 +28,90 @@ class Figure {
   }
 }
 
-// supprime tous les enfants de l'element
+// Crée les <figure> a partir d'un array
+function createGallery(array) {
+  for (let work of array) {
+    const newWork = new Figure(work.imageUrl, work.title);
+    newWork.build();
+  }
+}
+
+// Supprime tous les enfants de l'element
 function deleteChild(elem) {
   while (elem.firstChild) {
     elem.removeChild(elem.firstChild);
   }
 }
 
-// récupère les catégories et créer les boutons
-function createBtn() {
-  fetch("http://localhost:5678/api/categories")
-    .then(function (res) {
-      if (res.ok) {
-        return res.json();
-      }
-    })
-    .then(function (categories) {
-      for (let categ of categories) {
-        const newCateg = document.createElement("li");
-        newCateg.innerText = categ.name;
-        filtre.appendChild(newCateg);
-
-        newCateg.addEventListener("click", () => {
-          deleteChild(gallery);
-          createFigure(categ.id);
-        });
-      }
-    })
-    .catch((err) => console.log(err));
-
-  // bouton "Tous"
-  filtre.querySelector("li").addEventListener("click", () => {
-    deleteChild(gallery);
-    createFigure("all");
-  });
+// Retire la classe 'active' des boutons
+function removeBtnActif() {
+  const boutons = filtre.querySelectorAll("li");
+  for (let btn of boutons) {
+    btn.classList.remove("active");
+  }
 }
 
-// Recupère les travaux correspondant et les place dans un nouvel elem <figure>
-function createFigure(id) {
-  fetch("http://localhost:5678/api/works")
-    .then(function (res) {
-      if (res.ok) {
-        return res.json();
-      }
-    })
-    .then(function (works) {
-      if (id !== "all") {
-        works = works.filter((work) => {
-          return work.categoryId === id;
-        });
-      }
+/**
+ * Un seul appel par API et stockage résultats[]
+ * Fitrage sur l'array stocké
+ */
 
-      for (let work of works) {
-        const newWork = new Figure(work.imageUrl, work.title);
-        newWork.build();
-      }
-    })
-    .catch((err) => console.log(err));
+let worksArray = [];
+let boutonsArray = [];
+
+async function showWorks() {
+  try {
+    const res = await fetch("http://localhost:5678/api/categories");
+    if (!res.ok) {
+      return;
+    }
+    const categories = await res.json();
+    boutonsArray = categories;
+    boutonsArray.unshift({ id: 0, name: "Tous" });
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    const res = await fetch("http://localhost:5678/api/works");
+    if (!res.ok) {
+      return;
+    }
+    const works = await res.json();
+    worksArray = works;
+  } catch (err) {
+    console.log(err);
+  }
+
+  let x = 0;
+  for (let bouton of boutonsArray) {
+    const newCateg = document.createElement("li");
+    newCateg.innerText = bouton.name;
+    filtre.appendChild(newCateg);
+    if (x === 0) {
+      newCateg.classList.add("active");
+      x = 1;
+    }
+    newCateg.addEventListener("click", () => {
+      deleteChild(gallery);
+      filterWorks(bouton.id);
+      removeBtnActif();
+      newCateg.classList.add("active");
+    });
+  }
+
+  // Filtre et crée les <figures> en fonction de l'id
+  function filterWorks(id) {
+    if (id !== 0) {
+      let WorksArrayFiltered = worksArray.filter((test) => {
+        return test.categoryId === id;
+      });
+      createGallery(WorksArrayFiltered);
+    } else {
+      createGallery(worksArray);
+    }
+  }
+  filterWorks(0);
 }
 
-createBtn();
-createFigure("all");
+showWorks();

@@ -22,7 +22,10 @@
 			<ul>
 				<li><a href="#portfolio" title="Mes projets">projets</a></li>
 				<li><a href="#contact" title="Me contacter">contact</a></li>
-				<li><a href="./pages/login.html" title="Login">login</a></li>
+				<li id="log-btn">
+					<a href="./pages/login.html" title="Login" id="login_link">login</a>
+					<a href="./pages/login.html" title="Logout" id="logout_link" class="hidden">logout</a>
+				</li>
 				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 			</ul>
 		</nav>
@@ -45,9 +48,7 @@
 		</section>
 		<section id="portfolio">
 			<h2>Mes Projets</h2>
-			<ul class="filtre" id="filtre">
-				<li class="active" id="testBtn">Tous</li>
-			</ul>
+			<ul class="filtre" id="filtre"></ul>
 			<div class="gallery" id="gallery"></div>
 		</section>
 		<section id="contact">
@@ -75,5 +76,6 @@
 </body>
 
 <script src="./assets/js/work.js"></script>
+<script src="./assets/js/login.js"></script>
 
 </html>
