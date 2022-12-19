@@ -96,9 +96,17 @@ function logout() {
   if (checkCookie(cookieName) && document.getElementById("log-btn")) {
     const loginBtn = document.getElementById("login_link");
     const logoutBtn = document.getElementById("logout_link");
+    const header = document.querySelector("header");
+    const editBanner = document.getElementById("edit-mode");
+    let modifBtns = document.getElementsByClassName("modif");
 
+    for (let btn of modifBtns) {
+      btn.classList.remove("hidden");
+    }
     loginBtn.classList.add("hidden");
     logoutBtn.classList.remove("hidden");
+    editBanner.classList.remove("hidden");
+    header.classList.add("edit-mode-header");
 
     logoutBtn.addEventListener("click", () => {
       document.cookie =
