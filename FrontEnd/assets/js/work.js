@@ -4,7 +4,6 @@
  * Auteur : Rémy Balland
  */
 
-const gallery = document.getElementById("gallery");
 const filtre = document.getElementById("filtre");
 
 class Figure {
@@ -13,41 +12,130 @@ class Figure {
     this.title = title;
   }
 
-  build() {
-    const newFigure = document.createElement("figure");
-    const newImg = document.createElement("img");
-    const newTitle = document.createElement("figcaption");
+  build(galleryName) {
+    let newFigure;
+    let gallery;
+    let descriptionElem = "";
+    let descriptionContent = "";
+    switch (galleryName) {
+      case "main":
+        newFigure = document.createElement("figure");
+        gallery = document.getElementById("gallery");
+        descriptionElem = "figcaption";
+        descriptionContent = this.title;
+        break;
+      case "modal":
+        newFigure = document.createElement("li");
+        gallery = document.getElementById("modal-list");
+        descriptionElem = "p";
+        descriptionContent = "Éditer";
+        createModalSpan(newFigure);
+        break;
+      default:
+        break;
+    }
 
-    newImg.src = this.imageUrl;
-    newImg.alt = this.title;
-    newTitle.innerText = this.title;
-
-    newFigure.appendChild(newImg);
-    newFigure.appendChild(newTitle);
+    createImg(this.imageUrl, this.title, newFigure);
+    createDescription(descriptionElem, descriptionContent, newFigure);
     gallery.appendChild(newFigure);
   }
 }
 
-// Crée les <figure> a partir d'un array
-function createGallery(array) {
+function createImg(url, title, parent) {
+  const img = document.createElement("img");
+  img.src = url;
+  img.alt = title;
+  img.innerText = title;
+  parent.appendChild(img);
+}
+
+function createDescription(elemName, content, parent) {
+  const description = document.createElement(elemName);
+  description.innerText = content;
+  parent.appendChild(description);
+}
+
+function createGallery(array, galleryName) {
   for (let work of array) {
     const newWork = new Figure(work.imageUrl, work.title);
-    newWork.build();
+    newWork.build(galleryName);
   }
 }
 
-// Supprime tous les enfants de l'element
-function deleteChild(elem) {
+function filterWorks(id) {
+  if (id !== 0) {
+    let WorksArrayFiltered = worksArray.filter((test) => {
+      return test.categoryId === id;
+    });
+    createGallery(WorksArrayFiltered, "main");
+  } else {
+    createGallery(worksArray, "main");
+  }
+}
+
+function deleteAllChilds(elem) {
   while (elem.firstChild) {
     elem.removeChild(elem.firstChild);
   }
 }
 
-// Retire la classe 'active' des boutons
-function removeBtnActif() {
+function removeClassActive() {
   const boutons = filtre.querySelectorAll("li");
   for (let btn of boutons) {
     btn.classList.remove("active");
+  }
+}
+
+function createButtons(array) {
+  let x = 0;
+  for (let bouton of array) {
+    const newCateg = document.createElement("li");
+    newCateg.innerText = bouton.name;
+    filtre.appendChild(newCateg);
+
+    if (x === 0) {
+      newCateg.classList.add("active");
+      x = 1;
+    }
+    newCateg.addEventListener("click", () => {
+      deleteAllChilds(gallery);
+      filterWorks(bouton.id);
+      removeClassActive();
+      newCateg.classList.add("active");
+    });
+  }
+}
+
+/**
+ * MODAL ADMIN
+ */
+
+const modalSelect = document.getElementById("work-category");
+
+function createModalSpan(parent) {
+  const modalSpan = document.createElement("span");
+  const spanIcon = document.createElement("i");
+  spanIcon.classList.add("fa-solid");
+  spanIcon.classList.add("fa-trash-can");
+  spanIcon.title = "Supprimer";
+
+  modalSpan.appendChild(spanIcon);
+  parent.appendChild(modalSpan);
+}
+
+/*
+  Création des options du select
+*/
+
+function createModalOptions(optionsArray) {
+  for (let option of optionsArray) {
+    if (option.name !== "Tous") {
+      const selectOption = document.createElement("option");
+      selectOption.value = option.id;
+      selectOption.innerText = option.name;
+
+      modalSelect.appendChild(selectOption);
+    }
   }
 }
 
@@ -57,7 +145,7 @@ function removeBtnActif() {
  */
 
 let worksArray = [];
-let boutonsArray = [];
+let categArray = [];
 
 async function showWorks() {
   try {
@@ -66,8 +154,8 @@ async function showWorks() {
       return;
     }
     const categories = await res.json();
-    boutonsArray = categories;
-    boutonsArray.unshift({ id: 0, name: "Tous" });
+    categArray = categories;
+    categArray.unshift({ id: 0, name: "Tous" });
   } catch (err) {
     console.log(err);
   }
@@ -83,35 +171,10 @@ async function showWorks() {
     console.log(err);
   }
 
-  let x = 0;
-  for (let bouton of boutonsArray) {
-    const newCateg = document.createElement("li");
-    newCateg.innerText = bouton.name;
-    filtre.appendChild(newCateg);
-    if (x === 0) {
-      newCateg.classList.add("active");
-      x = 1;
-    }
-    newCateg.addEventListener("click", () => {
-      deleteChild(gallery);
-      filterWorks(bouton.id);
-      removeBtnActif();
-      newCateg.classList.add("active");
-    });
-  }
-
-  // Filtre et crée les <figures> en fonction de l'id
-  function filterWorks(id) {
-    if (id !== 0) {
-      let WorksArrayFiltered = worksArray.filter((test) => {
-        return test.categoryId === id;
-      });
-      createGallery(WorksArrayFiltered);
-    } else {
-      createGallery(worksArray);
-    }
-  }
-  filterWorks(0);
+  createButtons(categArray);
+  createModalOptions(categArray);
+  createGallery(worksArray, "main");
+  createGallery(worksArray, "modal");
 }
 
 showWorks();

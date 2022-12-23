@@ -91,7 +91,7 @@ function checkCookie(cookieName) {
  * logout
  */
 
-function logout() {
+function checkLogin() {
   const cookieName = "userToken";
   if (checkCookie(cookieName) && document.getElementById("log-btn")) {
     const loginBtn = document.getElementById("login_link");
@@ -115,4 +115,4 @@ function logout() {
   }
 }
 
-logout();
+checkLogin();
