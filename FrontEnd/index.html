@@ -17,7 +17,7 @@
 <body>
 	<div id="edit-mode" class="hidden">
 		<p><i class="fa-regular fa-pen-to-square"></i> Mode Édition</p>
-		<button class="button">publier les changements</button>
+		<button class="button" id="publish-btn">publier les changements</button>
 	</div>
 	<header>
 		<a href="index.html" title="Sophie Bluel">
@@ -108,15 +108,15 @@
 				<form action="#" method="POST" id="new-work-form">
 					<div class="work-image-box">
 						<i class="fa-regular fa-image"></i>
-						<input type="file" name="work-image" id="work-image" accept="image/png, image/jpeg"
+						<input type="file" name="work-image" id="new-work-image" accept="image/png, image/jpeg"
 							class="invisible">
-						<label for="work-image">+ Ajouter photo</label>
+						<label for="new-work-image">+ Ajouter photo</label>
 						<span>jpg, png : 4mo max</span>
 					</div>
-					<label for="work-title">Titre</label>
-					<input type="text" name="title" id="work-title">
-					<label for="work-category">Catégorie</label>
-					<select name="work-category" id="work-category">
+					<label for="new-work-title">Titre</label>
+					<input type="text" name="title" id="new-work-title">
+					<label for="new-work-category">Catégorie</label>
+					<select name="category" id="new-work-category">
 						<option value=""></option>
 					</select>
 				</form>
@@ -130,7 +130,6 @@
 </body>
 
 <script src="./assets/js/work.js"></script>
-<script src="./assets/js/login.js"></script>
 <script src="./assets/js/modal-form.js"></script>
 
 </html>
