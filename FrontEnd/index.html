@@ -108,11 +108,13 @@
 				<form action="#" method="POST" id="new-work-form">
 					<div class="work-image-box">
 						<i class="fa-regular fa-image"></i>
-						<input type="file" name="work-image" id="new-work-image" accept="image/png, image/jpeg"
+						<input type="file" name="image" id="new-work-image" accept="image/png, image/jpeg"
 							class="invisible">
 						<label for="new-work-image">+ Ajouter photo</label>
 						<span>jpg, png : 4mo max</span>
+
 					</div>
+					<div id="preview-image"></div>
 					<label for="new-work-title">Titre</label>
 					<input type="text" name="title" id="new-work-title">
 					<label for="new-work-category">Catégorie</label>

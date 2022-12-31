@@ -4,6 +4,13 @@
  * Auteur : Rémy Balland
  */
 
+const mainGallery = document.getElementById("gallery");
+const modalGallery = document.getElementById("modal-list");
+let worksArray = [];
+let categArray = [];
+let worksToDel = new Set();
+let worksToAdd = new Set();
+
 /**
  * Galleries
  */
@@ -23,16 +30,17 @@ class Figure {
     switch (galleryName) {
       case "mainGallery":
         newFigure = document.createElement("figure");
-        gallery = document.getElementById("gallery");
+        gallery = mainGallery;
         descriptionElem = "figcaption";
         descriptionContent = this.title;
         break;
       case "modalGallery":
         newFigure = document.createElement("li");
-        gallery = document.getElementById("modal-list");
+        gallery = modalGallery;
         descriptionElem = "p";
         descriptionContent = "Éditer";
         createModalSpan(newFigure);
+        deleteWork(newFigure);
         break;
       default:
         break;
@@ -50,7 +58,6 @@ function createImg(url, title, parent) {
 
   img.src = url;
   img.alt = title;
-  img.innerText = title;
   parent.appendChild(img);
 }
 
@@ -61,7 +68,8 @@ function createDescription(elemName, content, parent) {
   parent.appendChild(description);
 }
 
-function createGallery(array, galleryName) {
+function createGallery(array, galleryName, element) {
+  deleteAllChilds(element);
   for (let work of array) {
     const newWork = new Figure(work.imageUrl, work.title, work.id);
     newWork.build(galleryName);
@@ -70,19 +78,18 @@ function createGallery(array, galleryName) {
 
 function filterWorks(id) {
   if (id !== 0) {
-    let WorksArrayFiltered = worksArray.filter((test) => {
-      return test.categoryId === id;
+    let WorksArrayFiltered = worksArray.filter((btn) => {
+      return btn.categoryId === id;
     });
-    createGallery(WorksArrayFiltered, "mainGallery");
+    createGallery(WorksArrayFiltered, "mainGallery", mainGallery);
   } else {
-    createGallery(worksArray, "mainGallery");
+    createGallery(worksArray, "mainGallery", mainGallery);
   }
 }
 
 /**
  * Boutons
  */
-const filtre = document.getElementById("filtre");
 
 function deleteAllChilds(elem) {
   while (elem.firstChild) {
@@ -112,7 +119,7 @@ function createButtons(array) {
     }
 
     newCateg.addEventListener("click", () => {
-      deleteAllChilds(gallery);
+      deleteAllChilds(mainGallery);
       filterWorks(bouton.id);
       removeClassActive();
       newCateg.classList.add("active");
@@ -151,76 +158,126 @@ function createModalOptions(optionsArray) {
   }
 }
 
-function deleteWork() {
-  const modalGallery = document.getElementById("modal-list");
-  const deleteBtns = modalGallery.getElementsByClassName("delete-btn");
+function deleteWork(elem) {
+  const deleteBtn = elem.querySelector(".delete-btn");
   let idNumber;
 
-  for (let btn of deleteBtns) {
-    btn.onclick = function () {
-      const figureModal = btn.parentElement.parentElement;
-      workIdMainGallery = figureModal
-        .getAttribute("id")
-        .replace("modalGallery", "mainGallery");
-      idNumber = parseInt(workIdMainGallery.replace("mainGallery-", ""));
-      const figureMain = document.getElementById(workIdMainGallery);
+  deleteBtn.addEventListener("click", function () {
+    const figureModal = deleteBtn.parentElement.parentElement;
 
-      // figureMain.classList.add("hidden");
-      // figureModal.classList.add("hidden");
+    idNumber = parseInt(
+      figureModal.getAttribute("id").replace("modalGallery-", "")
+    );
 
-      const workToDelIndex = worksArray.findIndex(
-        (Object) => Object.id === idNumber
-      );
+    worksArray = worksArray.filter((object) => {
+      return object.id !== idNumber;
+    });
 
-      if (workToDelIndex >= 0) {
-        worksArray.splice(workToDelIndex, 1);
+    createGallery(worksArray, "mainGallery", mainGallery);
+    createGallery(worksArray, "modalGallery", modalGallery);
 
-        // delete gallery avant de rebuild -> revoir les utils deletechild()
+    worksToDel.add(idNumber);
 
-        createGallery(worksArray, "mainGallery");
-        createGallery(worksArray, "modalGallery");
-      }
+    console.log("Id of works to delete :", worksToDel);
+    console.log("New worksArray :", worksArray);
+  });
+}
 
-      worksToDel.add(idNumber);
+function addWork() {
+  const form = document.getElementById("new-work-form");
+  const imageSelector = document.getElementById("new-work-image");
+  const titleSelector = document.getElementById("new-work-title");
+  const categIdSelector = document.getElementById("new-work-category");
+  const previewBox = document.getElementById("preview-image");
+
+  let imageName = "";
+  let imageUrl = "";
+
+  // preview image
+  imageSelector.addEventListener("change", (e) => {
+    const fileList = e.target.files;
+    imageName = fileList[0].name;
+
+    if (fileList && fileList[0]) {
+      let reader = new FileReader();
+
+      reader.onload = function (e) {
+        imageUrl = e.target.result;
+        createImg(imageUrl, "your image", previewBox);
+      };
+      reader.readAsDataURL(fileList[0]);
+    }
+  });
+
+  form.onsubmit = function (e) {
+    e.preventDefault();
+    modal.classList.remove("flex");
+    body.classList.remove("no-scroll");
+
+    const newWork = {
+      categoryId: parseInt(categIdSelector.value),
+      id: worksArray.length + 1,
+      imageUrl: imageUrl,
+      title: titleSelector.value,
     };
-  }
+
+    worksArray.push(newWork);
+
+    const fetchData = new FormData(form);
+
+    worksToAdd.add(fetchData);
+
+    console.log(worksToAdd);
+
+    createGallery(worksArray, "mainGallery", mainGallery);
+    createGallery(worksArray, "modalGallery", modalGallery);
+  };
 }
 
 function publishChanges() {
   const publishBtn = document.getElementById("publish-btn");
 
-  publishBtn.onclick = function () {
-    if (worksToDel.size > 0 && checkCookie("userToken")) {
+  publishBtn.addEventListener("click", function () {
+    if (checkCookie("userToken")) {
       const bearerToken = getCookie("userToken");
+      if (worksToDel.size > 0) {
+        worksToDel.forEach((workId) => {
+          const url = "http://localhost:5678/api/works/" + workId;
 
-      worksToDel.forEach((workId) => {
-        const url = "http://localhost:5678/api/works/" + workId;
-
-        console.log(url);
-
-        fetch(url, {
-          method: "DELETE",
-          headers: {
-            Accept: "*/*",
-            Authorization: "Bearer " + bearerToken,
-          },
+          fetch(url, {
+            method: "DELETE",
+            headers: {
+              Accept: "*/*",
+              Authorization: "Bearer " + bearerToken,
+            },
+          }).catch((err) => {
+            console.log(err);
+          });
         });
-      });
+      }
+      if (worksToAdd.size > 0) {
+        worksToAdd.forEach((work) => {
+          fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + bearerToken,
+            },
+            body: work,
+          });
+          console.log(work);
+        });
+      }
     } else {
-      console.log("Pas de changement à publier");
+      console.log("Utilisateur non connecté");
     }
-  };
+  });
 }
 
 /**
  * Un seul appel par API et stockage résultats[]
  * Fitrage sur l'array stocké
  */
-
-let worksArray = [];
-let categArray = [];
-let worksToDel = new Set();
-let worksToAdd = [];
 
 async function showWorks() {
   try {
@@ -248,30 +305,11 @@ async function showWorks() {
 
   createButtons(categArray);
   createModalOptions(categArray);
-  createGallery(worksArray, "mainGallery");
-  createGallery(worksArray, "modalGallery");
+  createGallery(worksArray, "mainGallery", mainGallery);
+  createGallery(worksArray, "modalGallery", modalGallery);
 
-  deleteWork();
-  publishChanges();
-
-  function addWork() {
-    const form = document.getElementById("new-work-form");
-
-    form.onsubmit = function (e) {
-      e.preventDefault();
-      const image = document.getElementById("new-work-image").value;
-      const title = document.getElementById("new-work-title").value;
-      const categId = document.getElementById("new-work-category").value;
-
-      const body = new FormData();
-      body.append("image", image);
-      body.append("title", title);
-      body.append("category", categId);
-
-      console.log(body);
-    };
-  }
   addWork();
+  publishChanges();
 }
 
 showWorks();

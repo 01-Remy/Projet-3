@@ -6,7 +6,7 @@
 
 const body = document.body;
 const modal = document.getElementById("edit-modal");
-const modalGallery = document.getElementById("gallery-photo");
+const modalGalleryPreview = document.getElementById("gallery-photo");
 const modalForm = document.getElementById("modal-form");
 const closeSpans = document.getElementsByClassName("close");
 const btnEditWorks = document.getElementById("btn-edit-works");
@@ -23,13 +23,13 @@ btnEditWorks.onclick = function () {
 };
 
 addImage.onclick = function () {
-  modalGallery.classList.add("hidden");
+  modalGalleryPreview.classList.add("hidden");
   modalForm.classList.remove("hidden");
 };
 
 backArrow.onclick = function () {
   modalForm.classList.add("hidden");
-  modalGallery.classList.remove("hidden");
+  modalGalleryPreview.classList.remove("hidden");
 };
 
 /*
