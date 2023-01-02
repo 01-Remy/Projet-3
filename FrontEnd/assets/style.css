@@ -328,7 +328,7 @@ p.modif {
 }
 #contact > *,
 #login-form > *,
-#modal-form > * {
+#modal-form-box > * {
   text-align: center;
 }
 #contact h2,
@@ -337,7 +337,7 @@ p.modif {
 }
 #contact form,
 #login-form form,
-#modal-form form {
+#modal-form-box form {
   text-align: left;
   margin-top: 30px;
   display: flex;
@@ -346,8 +346,8 @@ p.modif {
 
 #contact input,
 #login-form input,
-#modal-form form input,
-#modal-form form select {
+#modal-form-box form input,
+#modal-form-box form select {
   height: 50px;
   font-size: 1.2em;
   border: none;
@@ -355,7 +355,7 @@ p.modif {
 }
 #contact label,
 #login-form label,
-#modal-form form label {
+#modal-form-box form label {
   margin: 2em 0 1em 0;
 }
 #contact textarea {
@@ -377,6 +377,17 @@ input[type="submit"] {
   text-align: center;
   border-radius: 60px;
   cursor: pointer;
+}
+
+.error {
+  font-size: 16px;
+  margin: 2em auto 0;
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 5px;
+  color: red;
+  background-color: rgba(255, 0, 0, 0.1);
+  pointer-events: none;
 }
 
 #contact .button:hover,
@@ -528,7 +539,7 @@ header.edit-mode-header {
   cursor: pointer;
 }
 
-#modal-form .work-image-box {
+#modal-form-box .work-image-box {
   display: flex;
   flex-direction: column;
   border-radius: 3px;
@@ -537,12 +548,12 @@ header.edit-mode-header {
   padding: 25px;
 }
 
-#modal-form .work-image-box i {
+#modal-form-box .work-image-box i {
   font-size: 58px;
   color: #b9c5cc;
 }
 
-#modal-form .work-image-box label {
+#modal-form-box .work-image-box label {
   height: auto;
   border-radius: 50px;
   background-color: #cbd6dc;
@@ -554,17 +565,17 @@ header.edit-mode-header {
   cursor: pointer;
 }
 
-#modal-form .work-image-box span {
+#modal-form-box .work-image-box span {
   margin-top: 7px;
   font-size: 10px;
 }
 
-#modal-form #preview-image {
+#modal-form-box #preview-image {
   display: flex;
   justify-content: center;
 }
 
-#modal-form #preview-image img {
+#modal-form-box #preview-image img {
   height: 150px;
   object-fit: contain;
 }
@@ -574,7 +585,7 @@ header.edit-mode-header {
   flex-direction: column;
   align-items: center;
   width: 80%;
-  margin: 5em auto 23px;
+  margin: 2em auto 23px;
   padding-top: 38px;
   gap: 23px;
   border-top: 1px solid #b3b3b3;
@@ -597,12 +608,12 @@ header.edit-mode-header {
   background-color: #0e2f28;
 }
 
-#modal-form .modal-footer .button {
+#modal-form-box .modal-footer .button {
   background-color: #a7a7a7;
   color: #fff;
 }
 
-#modal-form .modal-footer .button:hover,
-#modal-form .modal-footer .button:focus {
+#modal-form-box .modal-footer .button:hover,
+#modal-form-box .modal-footer .button:focus {
   background-color: #727272;
 }

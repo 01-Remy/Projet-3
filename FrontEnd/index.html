@@ -96,7 +96,7 @@
 				<button id="del-gallery" class="button">Supprimer la galerie</button>
 			</div>
 		</div>
-		<div class="modal-content hidden" id="modal-form">
+		<div class="modal-content hidden" id="modal-form-box">
 			<div class="modal-header">
 				<div class="modal-nav">
 					<i class="fa-solid fa-arrow-left back" id="back-arrow"></i>
@@ -106,7 +106,7 @@
 			</div>
 			<div class="modal-body">
 				<form action="#" method="POST" id="new-work-form">
-					<div class="work-image-box">
+					<div class="work-image-box" id="image-modal-input">
 						<i class="fa-regular fa-image"></i>
 						<input type="file" name="image" id="new-work-image" accept="image/png, image/jpeg"
 							class="invisible">
@@ -122,6 +122,7 @@
 						<option value=""></option>
 					</select>
 				</form>
+				<p id="modal-form-error" class="error invisible">Message d'erreur</p>
 			</div>
 			<div class="modal-footer">
 				<button type="submit" form="new-work-form" value="Submit" id="submit-picture"

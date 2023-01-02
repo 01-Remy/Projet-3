@@ -6,10 +6,18 @@
 
 const mainGallery = document.getElementById("gallery");
 const modalGallery = document.getElementById("modal-list");
+const modalForm = document.getElementById("new-work-form");
+const previewBox = document.getElementById("preview-image");
+const imageInputBox = document.getElementById("image-modal-input");
+
 let worksArray = [];
 let categArray = [];
 let worksToDel = new Set();
 let worksToAdd = new Set();
+
+document.addEventListener("DOMContentLoaded", () => {
+  resetModalForm();
+});
 
 /**
  * Galleries
@@ -184,13 +192,11 @@ function deleteWork(elem) {
 }
 
 function addWork() {
-  const form = document.getElementById("new-work-form");
   const imageSelector = document.getElementById("new-work-image");
   const titleSelector = document.getElementById("new-work-title");
   const categIdSelector = document.getElementById("new-work-category");
-  const previewBox = document.getElementById("preview-image");
+  const errorMsgModal = document.getElementById("modal-form-error");
 
-  let imageName = "";
   let imageUrl = "";
 
   // preview image
@@ -199,6 +205,9 @@ function addWork() {
     imageName = fileList[0].name;
 
     if (fileList && fileList[0]) {
+      imageInputBox.classList.add("hidden");
+      previewBox.classList.remove("hidden");
+
       let reader = new FileReader();
 
       reader.onload = function (e) {
@@ -209,29 +218,46 @@ function addWork() {
     }
   });
 
-  form.onsubmit = function (e) {
+  modalForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    modal.classList.remove("flex");
-    body.classList.remove("no-scroll");
 
-    const newWork = {
-      categoryId: parseInt(categIdSelector.value),
-      id: worksArray.length + 1,
-      imageUrl: imageUrl,
-      title: titleSelector.value,
-    };
+    if (
+      !imageSelector.value ||
+      !titleSelector.value ||
+      !categIdSelector.value
+    ) {
+      errorMsgModal.innerText = "Merci de renseigner toutes les informations";
+      errorMsgModal.classList.remove("invisible");
+    } else {
+      modal.classList.remove("flex");
+      body.classList.remove("no-scroll");
 
-    worksArray.push(newWork);
+      const newWork = {
+        categoryId: parseInt(categIdSelector.value),
+        id: worksArray.length + 1,
+        imageUrl: imageUrl,
+        title: titleSelector.value,
+      };
 
-    const fetchData = new FormData(form);
+      worksArray.push(newWork);
 
-    worksToAdd.add(fetchData);
+      const fetchData = new FormData(modalForm);
 
-    console.log(worksToAdd);
+      worksToAdd.add(fetchData);
 
-    createGallery(worksArray, "mainGallery", mainGallery);
-    createGallery(worksArray, "modalGallery", modalGallery);
-  };
+      console.log(worksToAdd);
+
+      createGallery(worksArray, "mainGallery", mainGallery);
+      createGallery(worksArray, "modalGallery", modalGallery);
+      resetModalForm();
+    }
+  });
+}
+
+function resetModalForm() {
+  modalForm.reset();
+  imageInputBox.classList.remove("hidden");
+  previewBox.classList.add("hidden");
 }
 
 function publishChanges() {
@@ -250,9 +276,14 @@ function publishChanges() {
               Accept: "*/*",
               Authorization: "Bearer " + bearerToken,
             },
-          }).catch((err) => {
-            console.log(err);
-          });
+          })
+            .catch((err) => {
+              console.log(err);
+            })
+            .then(() => {
+              alert("Modifications publiées !");
+              // a revoir
+            });
         });
       }
       if (worksToAdd.size > 0) {
@@ -264,8 +295,9 @@ function publishChanges() {
               Authorization: "Bearer " + bearerToken,
             },
             body: work,
+          }).catch((err) => {
+            console.log(err);
           });
-          console.log(work);
         });
       }
     } else {

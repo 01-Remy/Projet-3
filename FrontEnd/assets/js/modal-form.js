@@ -7,7 +7,7 @@
 const body = document.body;
 const modal = document.getElementById("edit-modal");
 const modalGalleryPreview = document.getElementById("gallery-photo");
-const modalForm = document.getElementById("modal-form");
+const modalFormBox = document.getElementById("modal-form-box");
 const closeSpans = document.getElementsByClassName("close");
 const btnEditWorks = document.getElementById("btn-edit-works");
 const addImage = document.getElementById("add-picture");
@@ -17,35 +17,35 @@ const backArrow = document.getElementById("back-arrow");
  * Affichage modal
  */
 
-btnEditWorks.onclick = function () {
+btnEditWorks.addEventListener("click", () => {
   modal.classList.add("flex");
   body.classList.add("no-scroll");
-};
+});
 
-addImage.onclick = function () {
+addImage.addEventListener("click", () => {
   modalGalleryPreview.classList.add("hidden");
-  modalForm.classList.remove("hidden");
-};
+  modalFormBox.classList.remove("hidden");
+});
 
-backArrow.onclick = function () {
-  modalForm.classList.add("hidden");
+backArrow.addEventListener("click", () => {
+  modalFormBox.classList.add("hidden");
   modalGalleryPreview.classList.remove("hidden");
-};
+});
 
 /*
   Close modal
 */
 
 for (let span of closeSpans) {
-  span.onclick = function () {
+  span.addEventListener("click", () => {
     modal.classList.remove("flex");
     body.classList.remove("no-scroll");
-  };
+  });
 }
 
-window.onclick = function (event) {
+window.addEventListener("click", (event) => {
   if (event.target == modal) {
     modal.classList.remove("flex");
     body.classList.remove("no-scroll");
   }
-};
+});
