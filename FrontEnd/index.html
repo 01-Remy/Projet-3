@@ -10,16 +10,21 @@
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap"
 		rel="stylesheet">
 	<meta name="description" content="">
+	<script src="https://kit.fontawesome.com/70d42fe04e.js" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="./assets/style.css">
 </head>
 
 <body>
+	<div id="edit-mode" class="hidden">
+		<p><i class="fa-regular fa-pen-to-square"></i> Mode Édition</p>
+		<button class="button" id="publish-btn">publier les changements</button>
+	</div>
 	<header>
 		<a href="index.html" title="Sophie Bluel">
 			<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 		</a>
 		<nav>
-			<ul>
+			<ul id="menu">
 				<li><a href="#portfolio" title="Mes projets">projets</a></li>
 				<li><a href="#contact" title="Me contacter">contact</a></li>
 				<li id="log-btn">
@@ -32,10 +37,12 @@
 	</header>
 	<main>
 		<section id="introduction">
-			<figure>
-				<img src="./assets/images/sophie-bluel.png" alt="">
+			<figure class="profile-picture">
+				<img src="./assets/images/sophie-bluel.png" alt="photo de Sophie Buel">
+				<p class="modif hidden"><i class="fa-regular fa-pen-to-square"></i> Modifier</p>
 			</figure>
 			<article>
+				<p class="modif hidden"><i class="fa-regular fa-pen-to-square"></i> Modifier</p>
 				<h2>Designer d'espace</h2>
 				<p>Je raconte votre histoire, je valorise vos idées. Je vous accompagne de la conception à la livraison
 					finale du chantier.</p>
@@ -47,7 +54,10 @@
 			</article>
 		</section>
 		<section id="portfolio">
-			<h2>Mes Projets</h2>
+			<div class="portfolio_title">
+				<h2>Mes Projets</h2>
+				<p class="modif hidden" id="btn-edit-works"><i class="fa-regular fa-pen-to-square"></i> Modifier</p>
+			</div>
 			<ul class="filtre" id="filtre"></ul>
 			<div class="gallery" id="gallery"></div>
 		</section>
@@ -61,11 +71,10 @@
 				<input type="email" name="email" id="email">
 				<label for="message">Message</label>
 				<textarea name="message" id="message" cols="30" rows="10"></textarea>
-				<input type="submit" value="Envoyer">
+				<input type="submit" value="Envoyer" class="button">
 			</form>
 		</section>
 	</main>
-
 	<footer>
 		<nav>
 			<ul>
@@ -73,9 +82,56 @@
 			</ul>
 		</nav>
 	</footer>
-</body>
+	<div id="edit-modal" class="modal">
+		<div class="modal-content" id="gallery-photo">
+			<div class="modal-header">
+				<span class="close">&times;</span>
+				<h2>Galerie Photo</h2>
+			</div>
+			<div class="modal-body">
+				<ul class="gallery" id="modal-list"></ul>
+			</div>
+			<div class="modal-footer">
+				<button id="add-picture" class="button">Ajouter une photo</button>
+				<button id="del-gallery" class="button">Supprimer la galerie</button>
+			</div>
+		</div>
+		<div class="modal-content hidden" id="modal-form-box">
+			<div class="modal-header">
+				<div class="modal-nav">
+					<i class="fa-solid fa-arrow-left back" id="back-arrow"></i>
+					<span class="close">&times;</span>
+				</div>
+				<h2>Ajout photo</h2>
+			</div>
+			<div class="modal-body">
+				<form action="#" method="POST" id="new-work-form">
+					<div class="work-image-box" id="image-modal-input">
+						<i class="fa-regular fa-image"></i>
+						<input type="file" name="image" id="new-work-image" accept="image/png, image/jpeg"
+							class="invisible">
+						<label for="new-work-image">+ Ajouter photo</label>
+						<span>jpg, png : 4mo max</span>
 
-<script src="./assets/js/work.js"></script>
-<script src="./assets/js/login.js"></script>
+					</div>
+					<div id="preview-image"></div>
+					<label for="new-work-title">Titre</label>
+					<input type="text" name="title" id="new-work-title">
+					<label for="new-work-category">Catégorie</label>
+					<select name="category" id="new-work-category">
+						<option value="">...</option>
+					</select>
+				</form>
+				<p id="modal-form-error" class="error invisible">Message d'erreur</p>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" form="new-work-form" value="Submit" id="submit-picture"
+					class="button">Valider</button>
+			</div>
+		</div>
+	</div>
+	<script src="./assets/js/work.js"></script>
+	<script src="./assets/js/modal-form.js"></script>
+</body>
 
 </html>

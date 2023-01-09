@@ -83,7 +83,8 @@ summary,
 time,
 mark,
 audio,
-video {
+video,
+button {
   margin: 0;
   padding: 0;
   border: 0;
@@ -107,6 +108,7 @@ section {
 }
 body {
   line-height: 1;
+  overflow-x: hidden;
 }
 ol,
 ul {
@@ -133,6 +135,10 @@ a {
   color: inherit;
 }
 
+select {
+  background-color: unset;
+}
+
 /** end reset css**/
 body {
   max-width: 1140px;
@@ -145,7 +151,6 @@ header {
   justify-content: space-between;
   margin: 50px 0;
 }
-
 main {
   min-height: calc(100vh - 210px);
 }
@@ -203,33 +208,84 @@ nav li.nav-active {
 li:hover {
   color: #b1663c;
 }
+
+#edit-mode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 60px;
+  gap: 1.5em;
+  color: #fff;
+  background-color: #000;
+  z-index: 3;
+}
+
+.button {
+  border-radius: 60px;
+  padding: 10px 23px;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+p.modif {
+  cursor: pointer;
+}
+
 #introduction {
   display: flex;
   align-items: center;
 }
+
 #introduction figure {
   flex: 1;
 }
+
 #introduction img {
+  object-fit: contain;
+}
+
+#introduction img,
+#introduction figure p.modif {
   display: block;
   margin: auto;
   width: 80%;
 }
+#introduction figure p.modif {
+  margin-top: 1em;
+}
 
 #introduction article {
   flex: 1;
+  margin-left: 1em;
 }
 #introduction h2 {
   margin-bottom: 1em;
 }
-
-#introduction p {
-  margin-bottom: 0.5em;
+#introduction article .modif {
+  margin-bottom: 2em;
 }
-#portfolio h2 {
-  text-align: center;
+#introduction p {
   margin-bottom: 1em;
 }
+#portfolio .portfolio_title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  margin-bottom: 1em;
+  gap: 1em;
+}
+
+#portfolio p.modif {
+  font-size: 14px;
+}
+
 .gallery {
   width: 100%;
   display: grid;
@@ -278,8 +334,9 @@ li:hover {
 #login-form {
   padding-top: 100px;
 }
-#contact,
-#login-form > * {
+#contact > *,
+#login-form > *,
+#modal-form-box > * {
   text-align: center;
 }
 #contact h2,
@@ -287,7 +344,8 @@ li:hover {
   margin-bottom: 20px;
 }
 #contact form,
-#login-form form {
+#login-form form,
+#modal-form-box form {
   text-align: left;
   margin-top: 30px;
   display: flex;
@@ -295,14 +353,17 @@ li:hover {
 }
 
 #contact input,
-#login-form input {
+#login-form input,
+#modal-form-box form input,
+#modal-form-box form select {
   height: 50px;
   font-size: 1.2em;
   border: none;
   box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 #contact label,
-#login-form label {
+#login-form label,
+#modal-form-box form label {
   margin: 2em 0 1em 0;
 }
 #contact textarea {
@@ -326,6 +387,22 @@ input[type="submit"] {
   cursor: pointer;
 }
 
+.error {
+  font-size: 16px;
+  margin: 2em auto 0;
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 5px;
+  color: red;
+  background-color: rgba(255, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+#contact .button:hover,
+#contact .button:focus {
+  background-color: #0e2f28;
+}
+
 footer nav ul {
   display: flex;
   justify-content: flex-end;
@@ -340,6 +417,278 @@ footer nav ul li {
   CLASS JS
 */
 
+.flex {
+  display: flex !important;
+}
+
 .hidden {
+  display: none !important;
+}
+
+.invisible {
+  opacity: 0;
+  height: 0px !important;
+}
+
+header.edit-mode-header {
+  margin-top: 90px;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/*
+  Modal Edition
+*/
+
+/* Background */
+.modal {
   display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  align-items: center;
+}
+
+/* Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 25px 30px;
+  border: 1px solid #888;
+  border-radius: 10px;
+  width: 40%;
+  max-width: 630px;
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-header h2 {
+  color: #000;
+  font-weight: 400;
+  font-size: 30px;
+  font-family: inherit;
+}
+
+.modal-nav {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.close {
+  color: #000;
+  font-size: 32px;
+  align-self: flex-end;
+}
+
+.modal-nav .back {
+  color: #000;
+  font-size: 21px;
+}
+
+.modal-nav .close {
+  margin-left: auto;
+}
+
+.close:hover,
+.close:focus,
+.modal-nav .back:hover,
+.modal-nav .back:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-body {
+  width: 80%;
+  margin: 3em auto 0;
+}
+
+.modal-body .gallery {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.modal-body .gallery li {
+  position: relative;
+}
+
+.modal-body .gallery li span {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  padding: 4px;
+  background-color: #000;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 2px;
+}
+
+.modal-body .gallery li:hover {
+  color: black;
+}
+
+.modal-body .gallery li p:hover {
+  color: #b1663c;
+  cursor: pointer;
+}
+
+.modal-body .gallery li span:hover {
+  cursor: pointer;
+}
+
+#modal-form-box .work-image-box,
+#modal-form-box #preview-image {
+  display: flex;
+  flex-direction: column;
+  border-radius: 3px;
+  align-items: center;
+  background-color: #e8f1f7;
+  padding: 25px;
+}
+
+#modal-form-box .work-image-box i {
+  font-size: 58px;
+  color: #b9c5cc;
+}
+
+#modal-form-box .work-image-box label {
+  height: auto;
+  border-radius: 50px;
+  background-color: #cbd6dc;
+  font-size: 14px;
+  color: #306685;
+  padding: 10px 33px;
+  margin: 15px 0 0;
+  max-width: 170px;
+  cursor: pointer;
+}
+
+#modal-form-box .work-image-box span {
+  margin-top: 7px;
+  font-size: 10px;
+}
+
+#modal-form-box #preview-image {
+  padding: 0;
+}
+
+#modal-form-box #preview-image img {
+  height: 170px;
+  width: 130px;
+  object-fit: contain;
+}
+
+.modal-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  margin: 2em auto 23px;
+  padding-top: 38px;
+  gap: 23px;
+  border-top: 1px solid #b3b3b3;
+}
+
+.modal-footer .button {
+  width: 50%;
+  background-color: #1d6154;
+  color: #fff;
+}
+
+.modal-footer #del-gallery {
+  font-weight: 400;
+  background-color: unset;
+  color: #d65353;
+}
+
+.modal-footer .button:hover,
+.modal-footer .button:focus {
+  background-color: #0e2f28;
+}
+
+#modal-form-box .modal-footer .button {
+  background-color: #a7a7a7;
+  color: #fff;
+}
+
+#modal-form-box .modal-footer .button:hover,
+#modal-form-box .modal-footer .button:focus {
+  background-color: #727272;
+}
+
+/*
+  Responsive
+*/
+
+@media (max-width: 1200px) {
+  body {
+    margin: 1.5em;
+  }
+}
+
+@media (max-width: 992px) {
+}
+
+@media (max-width: 768px) {
+  .filtre {
+    flex-wrap: wrap;
+  }
+
+  .gallery {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #login-form {
+    padding-top: 60px;
+  }
+}
+
+@media (max-width: 576px) {
+  #edit-mode {
+    flex-wrap: wrap;
+    padding-block: 0.75em;
+  }
+
+  header.edit-mode-header {
+    margin-top: 120px;
+  }
+
+  header {
+    margin-block: 30px;
+  }
+
+  #introduction {
+    flex-direction: column;
+  }
+  #introduction .profile-picture {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  #introduction img {
+    height: 250px;
+  }
+
+  .filtre {
+    flex-direction: column;
+  }
+
+  #contact,
+  #login-form {
+    width: 80%;
+  }
+
+  #login-form {
+    padding-top: 30px;
+  }
 }
