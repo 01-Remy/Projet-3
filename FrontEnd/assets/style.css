@@ -604,6 +604,7 @@ header.edit-mode-header {
   width: 50%;
   background-color: #1d6154;
   color: #fff;
+  white-space: nowrap;
 }
 
 .modal-footer #del-gallery {
@@ -635,9 +636,15 @@ header.edit-mode-header {
   body {
     margin: 1.5em;
   }
+  .modal-content {
+    width: 50%;
+  }
 }
 
 @media (max-width: 992px) {
+  .modal-footer .button {
+    width: 60%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -651,6 +658,12 @@ header.edit-mode-header {
 
   #login-form {
     padding-top: 60px;
+  }
+  .modal-content {
+    width: 70%;
+  }
+  .modal-body .gallery {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 
@@ -690,5 +703,20 @@ header.edit-mode-header {
 
   #login-form {
     padding-top: 30px;
+  }
+  .modal-content {
+    padding: 10px 16px;
+  }
+
+  .modal-body .gallery {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .modal-body .gallery li img {
+    max-height: 100px;
+  }
+
+  .modal-footer .button {
+    width: 100%;
   }
 }

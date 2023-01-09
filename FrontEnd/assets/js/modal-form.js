@@ -5,7 +5,7 @@
  */
 
 const body = document.body;
-const modal = document.getElementById("edit-modal");
+const modalBackground = document.getElementById("edit-modal");
 const modalGalleryPreview = document.getElementById("gallery-photo");
 const modalFormBox = document.getElementById("modal-form-box");
 const closeSpans = document.getElementsByClassName("close");
@@ -14,38 +14,44 @@ const addImage = document.getElementById("add-picture");
 const backArrow = document.getElementById("back-arrow");
 
 /*
- * Affichage modal
+ * Open modal
  */
 
 btnEditWorks.addEventListener("click", () => {
-  modal.classList.add("flex");
+  modalBackground.classList.add("flex");
   body.classList.add("no-scroll");
 });
 
+/**
+ * Affiche le formulaire d'ajout
+ */
 addImage.addEventListener("click", () => {
   modalGalleryPreview.classList.add("hidden");
   modalFormBox.classList.remove("hidden");
 });
 
+/**
+ * Affiche la gallerie de suppression
+ */
 backArrow.addEventListener("click", () => {
   modalFormBox.classList.add("hidden");
   modalGalleryPreview.classList.remove("hidden");
 });
 
 /*
-  Close modal
+  Close modal click croix ou en dehors
 */
 
 for (let span of closeSpans) {
   span.addEventListener("click", () => {
-    modal.classList.remove("flex");
+    modalBackground.classList.remove("flex");
     body.classList.remove("no-scroll");
   });
 }
 
 window.addEventListener("click", (event) => {
-  if (event.target == modal) {
-    modal.classList.remove("flex");
+  if (event.target == modalBackground) {
+    modalBackground.classList.remove("flex");
     body.classList.remove("no-scroll");
   }
 });
