@@ -108,6 +108,7 @@ section {
 }
 body {
   line-height: 1;
+  overflow-x: hidden;
 }
 ol,
 ul {
@@ -216,10 +217,11 @@ li:hover {
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  min-height: 60px;
   gap: 1.5em;
   color: #fff;
   background-color: #000;
+  z-index: 3;
 }
 
 .button {
@@ -239,9 +241,15 @@ p.modif {
   display: flex;
   align-items: center;
 }
+
 #introduction figure {
   flex: 1;
 }
+
+#introduction img {
+  object-fit: contain;
+}
+
 #introduction img,
 #introduction figure p.modif {
   display: block;
@@ -539,7 +547,8 @@ header.edit-mode-header {
   cursor: pointer;
 }
 
-#modal-form-box .work-image-box {
+#modal-form-box .work-image-box,
+#modal-form-box #preview-image {
   display: flex;
   flex-direction: column;
   border-radius: 3px;
@@ -571,12 +580,12 @@ header.edit-mode-header {
 }
 
 #modal-form-box #preview-image {
-  display: flex;
-  justify-content: center;
+  padding: 0;
 }
 
 #modal-form-box #preview-image img {
-  height: 150px;
+  height: 170px;
+  width: 130px;
   object-fit: contain;
 }
 
@@ -616,4 +625,70 @@ header.edit-mode-header {
 #modal-form-box .modal-footer .button:hover,
 #modal-form-box .modal-footer .button:focus {
   background-color: #727272;
+}
+
+/*
+  Responsive
+*/
+
+@media (max-width: 1200px) {
+  body {
+    margin: 1.5em;
+  }
+}
+
+@media (max-width: 992px) {
+}
+
+@media (max-width: 768px) {
+  .filtre {
+    flex-wrap: wrap;
+  }
+
+  .gallery {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #login-form {
+    padding-top: 60px;
+  }
+}
+
+@media (max-width: 576px) {
+  #edit-mode {
+    flex-wrap: wrap;
+    padding-block: 0.75em;
+  }
+
+  header.edit-mode-header {
+    margin-top: 120px;
+  }
+
+  header {
+    margin-block: 30px;
+  }
+
+  #introduction {
+    flex-direction: column;
+  }
+  #introduction .profile-picture {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  #introduction img {
+    height: 250px;
+  }
+
+  .filtre {
+    flex-direction: column;
+  }
+
+  #contact,
+  #login-form {
+    width: 80%;
+  }
+
+  #login-form {
+    padding-top: 30px;
+  }
 }

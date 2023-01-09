@@ -234,7 +234,6 @@ function addWork() {
 
       const newWork = {
         categoryId: parseInt(categIdSelector.value),
-        id: worksArray.length + 1,
         imageUrl: imageUrl,
         title: titleSelector.value,
       };
@@ -244,8 +243,6 @@ function addWork() {
       const fetchData = new FormData(modalForm);
 
       worksToAdd.add(fetchData);
-
-      console.log(worksToAdd);
 
       createGallery(worksArray, "mainGallery", mainGallery);
       createGallery(worksArray, "modalGallery", modalGallery);
@@ -269,21 +266,15 @@ function publishChanges() {
       if (worksToDel.size > 0) {
         worksToDel.forEach((workId) => {
           const url = "http://localhost:5678/api/works/" + workId;
-
           fetch(url, {
             method: "DELETE",
             headers: {
               Accept: "*/*",
               Authorization: "Bearer " + bearerToken,
             },
-          })
-            .catch((err) => {
-              console.log(err);
-            })
-            .then(() => {
-              alert("Modifications publiées !");
-              // a revoir
-            });
+          }).catch((err) => {
+            console.log(err);
+          });
         });
       }
       if (worksToAdd.size > 0) {
