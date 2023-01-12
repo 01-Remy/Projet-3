@@ -1,5 +1,8 @@
 /**
+ * Gestion de la homepage
+ *
  * Affichage et fitrage des différents travaux
+ * Ajout et suppression des travaux via modal admin
  *
  * Auteur : Rémy Balland
  */
@@ -14,10 +17,6 @@ let worksArray = [];
 let categArray = [];
 let worksToDel = new Set();
 let worksToAdd = new Set();
-
-document.addEventListener("DOMContentLoaded", () => {
-  resetModalForm();
-});
 
 /**
  * Galleries
@@ -69,25 +68,28 @@ function createImg(url, title, parent) {
   parent.appendChild(img);
 }
 
-function createDescription(elemName, content, parent) {
-  const description = document.createElement(elemName);
+function createDescription(htmlTagName, content, parent) {
+  const description = document.createElement(htmlTagName);
 
   description.innerText = content;
   parent.appendChild(description);
 }
 
-function createGallery(array, galleryName, element) {
+function createGallery(workArray, galleryName, element) {
   deleteAllChilds(element);
-  for (let work of array) {
+  for (let work of workArray) {
     const newWork = new Figure(work.imageUrl, work.title, work.id);
     newWork.build(galleryName);
   }
 }
 
-function filterWorks(id) {
-  if (id !== 0) {
-    let WorksArrayFiltered = worksArray.filter((btn) => {
-      return btn.categoryId === id;
+/**
+ * Filtre les travaux correspondant à la categoryId du bouton cliqué
+ */
+function filterWorks(categId) {
+  if (categId !== 0) {
+    let WorksArrayFiltered = worksArray.filter((work) => {
+      return work.categoryId === categId;
     });
     createGallery(WorksArrayFiltered, "mainGallery", mainGallery);
   } else {
@@ -96,27 +98,22 @@ function filterWorks(id) {
 }
 
 /**
- * Boutons
+ * Supprime tous les enfants de @param elem
  */
-
 function deleteAllChilds(elem) {
   while (elem.firstChild) {
     elem.removeChild(elem.firstChild);
   }
 }
 
-function removeClassActive() {
-  const boutons = filtre.querySelectorAll("li");
+/**
+ * Crée les boutons de fitrage et leurs events
+ */
 
-  for (let btn of boutons) {
-    btn.classList.remove("active");
-  }
-}
-
-function createButtons(array) {
+function createButtons(btnArray) {
   let x = 0;
 
-  for (let bouton of array) {
+  for (let bouton of btnArray) {
     const newCateg = document.createElement("li");
     newCateg.innerText = bouton.name;
     filtre.appendChild(newCateg);
@@ -135,8 +132,17 @@ function createButtons(array) {
   }
 }
 
+function removeClassActive() {
+  const boutons = filtre.querySelectorAll("li");
+
+  for (let btn of boutons) {
+    btn.classList.remove("active");
+  }
+}
+
 /**
- * Modal
+ * Creation des boutons delete du modal
+ * Gestion de l'affichage du modal dans le fichier : modal-form.js
  */
 
 function createModalSpan(parent) {
@@ -152,6 +158,10 @@ function createModalSpan(parent) {
   parent.appendChild(modalSpan);
 }
 
+/**
+ * Crée les options du select du modal
+ * @param optionsArray tableau des catégories
+ */
 function createModalOptions(optionsArray) {
   const modalSelect = document.getElementById("new-work-category");
 
@@ -166,8 +176,13 @@ function createModalOptions(optionsArray) {
   }
 }
 
-function deleteWork(elem) {
-  const deleteBtn = elem.querySelector(".delete-btn");
+/**
+ * Suppression des travaux
+ * Ajoute event au bouton enfant de @param parent
+ * Filtre en local & ajoute le travail à supprimer au set()
+ */
+function deleteWork(parent) {
+  const deleteBtn = parent.querySelector(".delete-btn");
   let idNumber;
 
   deleteBtn.addEventListener("click", function () {
@@ -185,12 +200,14 @@ function deleteWork(elem) {
     createGallery(worksArray, "modalGallery", modalGallery);
 
     worksToDel.add(idNumber);
-
-    console.log("Id of works to delete :", worksToDel);
-    console.log("New worksArray :", worksArray);
   });
 }
 
+/**
+ * Gestion formulaire modal
+ * Crée un objet et l'ajoute en local & stock Formdata dans un Set()
+ * Recrée les galleries & reset formulaire
+ */
 function addWork() {
   const imageSelector = document.getElementById("new-work-image");
   const titleSelector = document.getElementById("new-work-title");
@@ -212,6 +229,7 @@ function addWork() {
 
       reader.onload = function (e) {
         imageUrl = e.target.result;
+        deleteAllChilds(previewBox);
         createImg(imageUrl, "your image", previewBox);
       };
       reader.readAsDataURL(fileList[0]);
@@ -229,13 +247,15 @@ function addWork() {
       errorMsgModal.innerText = "Merci de renseigner toutes les informations";
       errorMsgModal.classList.remove("invisible");
     } else {
-      modal.classList.remove("flex");
+      // close modal
+      modalBackground.classList.remove("flex");
       body.classList.remove("no-scroll");
 
       const newWork = {
         categoryId: parseInt(categIdSelector.value),
         imageUrl: imageUrl,
         title: titleSelector.value,
+        id: worksArray.length + 1, // temporaire pour pouvoir supprimer le travail s'il n'a pas été POST
       };
 
       worksArray.push(newWork);
@@ -256,6 +276,11 @@ function resetModalForm() {
   imageInputBox.classList.remove("hidden");
   previewBox.classList.add("hidden");
 }
+
+/**
+ * Gestion du bouton de publication
+ * Fetch delete et/ou post si les set() ne sont pas vide
+ */
 
 function publishChanges() {
   const publishBtn = document.getElementById("publish-btn");
@@ -291,57 +316,15 @@ function publishChanges() {
           });
         });
       }
-    } else {
-      console.log("Utilisateur non connecté");
     }
   });
 }
 
 /**
- * Un seul appel par API et stockage résultats[]
- * Fitrage sur l'array stocké
- */
-
-async function showWorks() {
-  try {
-    const res = await fetch("http://localhost:5678/api/categories");
-    if (!res.ok) {
-      return;
-    }
-    const categories = await res.json();
-    categArray = categories;
-    categArray.unshift({ id: 0, name: "Tous" });
-  } catch (err) {
-    console.log(err);
-  }
-
-  try {
-    const res = await fetch("http://localhost:5678/api/works");
-    if (!res.ok) {
-      return;
-    }
-    const works = await res.json();
-    worksArray = works;
-  } catch (err) {
-    console.log(err);
-  }
-
-  createButtons(categArray);
-  createModalOptions(categArray);
-  createGallery(worksArray, "mainGallery", mainGallery);
-  createGallery(worksArray, "modalGallery", modalGallery);
-
-  addWork();
-  publishChanges();
-}
-
-showWorks();
-
-/**
  * Gestion des cookies
+ * Recupère tous les cookies et boucle pour chercher si cookieName existe
+ * Return le contenu du cookie
  */
-
-// recupère tous les cookies et boucle pour chercher si le cookie demandé existe
 function getCookie(cookieName) {
   let name = cookieName + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
@@ -396,4 +379,49 @@ function checkLogin() {
   }
 }
 
-checkLogin();
+/**
+ * Création de la page
+ * Un seul appel par API et stockage résultats en local
+ * Fitrage sur l'array local
+ */
+
+async function initPage() {
+  try {
+    const res = await fetch("http://localhost:5678/api/categories");
+    if (!res.ok) {
+      return;
+    }
+    const categories = await res.json();
+    categArray = categories;
+    categArray.unshift({ id: 0, name: "Tous" });
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    const res = await fetch("http://localhost:5678/api/works");
+    if (!res.ok) {
+      return;
+    }
+    const works = await res.json();
+    worksArray = works;
+  } catch (err) {
+    console.log(err);
+  }
+
+  // Reset formulaire modal au reload
+  document.addEventListener("DOMContentLoaded", () => {
+    resetModalForm();
+  });
+
+  createButtons(categArray);
+  createGallery(worksArray, "mainGallery", mainGallery);
+  createGallery(worksArray, "modalGallery", modalGallery);
+
+  createModalOptions(categArray);
+  addWork();
+  publishChanges();
+  checkLogin();
+}
+
+initPage();
