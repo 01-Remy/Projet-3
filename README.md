@@ -1,5 +1,4 @@
 # OpenClassrooms : Projet-3
-# Rémy Balland
 
 Projet “Créez une page web dynamique avec JavaScript”
 
