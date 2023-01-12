@@ -19,13 +19,6 @@ let worksToDel = new Set();
 let worksToAdd = new Set();
 
 /**
- * Reset formulaire modal au reload
- */
-document.addEventListener("DOMContentLoaded", () => {
-  resetModalForm();
-});
-
-/**
  * Galleries
  */
 class Figure {
@@ -94,7 +87,7 @@ function createGallery(workArray, galleryName, element) {
  * Filtre les travaux correspondant à la categoryId du bouton cliqué
  */
 function filterWorks(categId) {
-  if (id !== 0) {
+  if (categId !== 0) {
     let WorksArrayFiltered = worksArray.filter((work) => {
       return work.categoryId === categId;
     });
@@ -323,8 +316,6 @@ function publishChanges() {
           });
         });
       }
-    } else {
-      console.log("Utilisateur non connecté");
     }
   });
 }
@@ -418,11 +409,16 @@ async function initPage() {
     console.log(err);
   }
 
+  // Reset formulaire modal au reload
+  document.addEventListener("DOMContentLoaded", () => {
+    resetModalForm();
+  });
+
   createButtons(categArray);
-  createModalOptions(categArray);
   createGallery(worksArray, "mainGallery", mainGallery);
   createGallery(worksArray, "modalGallery", modalGallery);
 
+  createModalOptions(categArray);
   addWork();
   publishChanges();
   checkLogin();
