@@ -11,7 +11,7 @@ Ressources fournies par OC :
 
 Objectifs :
 
-- Récupérer les travaux dynamiquement depuis l'API.
-- Trier les travaux par catégories.
-- Intégration de la page de connexion.
-- Intégration de la modale d'administration des travaux (gallerie de suppression & formulaire d'ajout).
+- Récupérer les travaux dynamiquement depuis l'API
+- Trier les travaux par catégories
+- Intégration de la page de connexion
+- Intégration de la modale d'administration des travaux (gallerie de suppression & formulaire d'ajout)
