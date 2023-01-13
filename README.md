@@ -14,4 +14,4 @@ Objectifs :
 - Récupérer les travaux dynamiquement depuis l'API
 - Trier les travaux par catégories
 - Intégration de la page de connexion
-- Intégration de la modale d'administration des travaux (gallerie de suppression & formulaire d'ajout)
+- Intégration de la modale d'administration des travaux (galerie de suppression & formulaire d'ajout)
